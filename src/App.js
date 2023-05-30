@@ -1,42 +1,42 @@
 import {Component} from 'react'
-import {v4 as uuidv4} from 'uuid'
+
 import './App.css'
 
 // This is the list used in the application. You can move them to any component needed.
 
 const initialSlidesList = [
   {
-    id: 'cc6e1752-a063-11ec-b909-0242ac120002',
+    id: 1,
     heading: 'Welcome',
     description: 'Rahul',
   },
   {
-    id: 'cc6e1aae-a063-11ec-b909-0242ac120002',
+    id: 2,
     heading: 'Agenda',
     description: 'Technologies in focus',
   },
   {
-    id: 'cc6e1e78-a063-11ec-b909-0242ac120002',
+    id: 3,
     heading: 'Cyber Security',
     description: 'Ethical Hacking',
   },
   {
-    id: 'cc6e1fc2-a063-11ec-b909-0242ac120002',
+    id: 4,
     heading: 'IoT',
     description: 'Wireless Technologies',
   },
   {
-    id: 'cc6e20f8-a063-11ec-b909-0242ac120002',
+    id: 5,
     heading: 'AI-ML',
     description: 'Cutting-Edge Technology',
   },
   {
-    id: 'cc6e2224-a063-11ec-b909-0242ac120002',
+    id: 6,
     heading: 'Blockchain',
     description: 'Emerging Technology',
   },
   {
-    id: 'cc6e233c-a063-11ec-b909-0242ac120002',
+    id: 7,
     heading: 'XR Technologies',
     description: 'AR/VR Technologies',
   },
@@ -44,34 +44,38 @@ const initialSlidesList = [
 
 export default class App extends Component {
   state = {
-    activeSlideTabName: initialSlidesList[0].heading,
+    activeSlideTabName: initialSlidesList[0].id,
     isHeadingCliked: false,
     isParaClicked: false,
     head: '',
     desc: '',
+    slidesList: initialSlidesList,
   }
 
-  changeActiveItem = heading => {
+  changeActiveItem = id => {
     this.setState({
-      activeSlideTabName: heading,
+      activeSlideTabName: id,
     })
   }
 
   onAddNewSlide = () => {
-    const {activeSlideTabName} = this.state
+    const {activeSlideTabName, slidesList} = this.state
+
+    const indexOfActiveSlideTab = slidesList.findIndex(
+      object => object.heading === activeSlideTabName,
+    )
 
     const newSlideObject = {
-      id: uuidv4(),
+      id: indexOfActiveSlideTab + 1,
       heading: 'Heading',
       description: 'Description',
     }
-    console.log(newSlideObject)
 
-    const indexOfActiveSlideTab = initialSlidesList.findIndex(
-      object => object.heading === activeSlideTabName,
-    )
-    console.log(indexOfActiveSlideTab)
-    initialSlidesList[indexOfActiveSlideTab] = newSlideObject
+    slidesList.splice(indexOfActiveSlideTab + 2, 0, newSlideObject)
+    this.setState({
+      slidesList,
+      activeSlideTabName: indexOfActiveSlideTab + 1,
+    })
   }
 
   changeHeadingState = () => {
@@ -105,12 +109,13 @@ export default class App extends Component {
       isParaClicked,
       head,
       desc,
+      slidesList,
     } = this.state
     console.log(isHeadingCliked)
     console.log(isParaClicked)
 
-    const activeObject = initialSlidesList.find(
-      object => object.heading === activeSlideTabName,
+    const activeObject = slidesList.find(
+      object => object.id === activeSlideTabName,
     )
 
     return (
@@ -139,20 +144,18 @@ export default class App extends Component {
               <p className="button-para">New</p>
             </button>
             <ol className="sliders-list">
-              {initialSlidesList.map(item => {
+              {slidesList.map(item => {
                 const {id, heading, description} = item
 
-                const index = initialSlidesList.findIndex(
-                  object => object.id === id,
-                )
+                const index = slidesList.findIndex(object => object.id === id)
 
                 const className =
-                  activeSlideTabName === heading ? 'add-style-to-button' : ''
+                  activeSlideTabName === id ? 'add-style-to-button' : ''
 
                 return (
                   <button
                     onClick={() => {
-                      this.changeActiveItem(heading)
+                      this.changeActiveItem(id)
                     }}
                     className={`button-for-list-item ${className}`}
                     type="button"
